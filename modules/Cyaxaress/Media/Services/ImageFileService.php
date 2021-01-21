@@ -1,4 +1,5 @@
 <?php
+
 namespace Cyaxaress\Media\Services;
 
 
@@ -14,7 +15,7 @@ class ImageFileService
         $extension = $file->getClientOriginalExtension();
         $dir = 'app\public\\';
         $file->move(storage_path($dir), $filename . '.' . $extension);
-        $path = $dir . '\\' . $filename .  '.' . $extension;
+        $path = $dir . '\\' . $filename . '.' . $extension;
 
         return self::resize(storage_path($path), $dir, $filename, $extension);
     }
@@ -22,13 +23,22 @@ class ImageFileService
     private static function resize($img, $dir, $filename, $extension)
     {
         $img = Image::make($img);
-        $imgs['original'] = $dir . $filename . $extension;
+        $imgs['original'] = $filename . '.' . $extension;
         foreach (self::$sizes as $size) {
-            $imgs[$size] = $dir . $filename . '_'. $size. '.' . $extension;
+            $imgs[$size] = $filename . '_' . $size . '.' . $extension;
             $img->resize($size, null, function ($aspect) {
                 $aspect->aspectRatio();
-            })->save(storage_path($dir) . $filename . '_'. $size. '.' . $extension);
+            })->save(storage_path($dir) . $filename . '_' . $size . '.' . $extension);
         }
         return $imgs;
     }
+
+    public static function delete($media)
+    {
+        foreach ($media->files as $file) {
+            \Storage::delete('public'.$file);
+        }
+    }
+
+
 }

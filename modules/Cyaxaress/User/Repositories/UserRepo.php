@@ -20,6 +20,6 @@ class UserRepo
 
     public function findById($id)
     {
-        return User::find($id);
+        return User::findOrFail($id);
     }
 }

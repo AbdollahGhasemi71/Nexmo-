@@ -4,7 +4,7 @@ namespace Cyaxaress\Media\Services;
 
 use Cyaxaress\Media\Models\Media;
 
-class MediaUploadService
+class MediaFileService
 {
     public static function upload($file)
     {
@@ -29,4 +29,15 @@ class MediaUploadService
                 break;
         };
     }
+
+    public static function delete($media)
+    {
+        switch ($media->type) {
+            case 'image':
+                ImageFileService::delete($media);
+        }
+
+    }
+
+
 }

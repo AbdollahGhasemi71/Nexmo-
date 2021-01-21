@@ -24,4 +24,15 @@ class CourseRepo
             'body' => $values->body,
         ]);
     }
+
+    public function paginate()
+    {
+        return Course::paginate();
+    }
+
+    public function findbyId($id)
+    {
+
+        return Course::findOrFail($id);
+    }
 }
