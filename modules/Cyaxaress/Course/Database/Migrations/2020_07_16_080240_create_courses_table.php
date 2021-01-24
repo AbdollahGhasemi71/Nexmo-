@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Cyaxaress\Course\Models\Course;
 
 class CreateCoursesTable extends Migration
 {
@@ -23,8 +24,9 @@ class CreateCoursesTable extends Migration
             $table->float('priority')->nullable();
             $table->string('price', 10);
             $table->string('percent', 5);
-            $table->enum('type', \Cyaxaress\Course\Models\Course::$types);
-            $table->enum('status', \Cyaxaress\Course\Models\Course::$statuses);
+            $table->enum('type', Course::$types);
+            $table->enum('status', Course::$statuses);
+            $table->enum('confirmation_status', Course::$confirmationStatus);
             $table->longText('body')->nullable();
             $table->timestamps();
 

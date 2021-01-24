@@ -32,7 +32,34 @@ class CourseRepo
 
     public function findbyId($id)
     {
-
         return Course::findOrFail($id);
+    }
+
+    public function update($id, $value)
+    {
+        return Course::where('id', $id)->update([
+            'teacher_id' => $value->teacher_id,
+            'category_id' => $value->category_id,
+            'banner_id' => $value->banner_id,
+            'title' => $value->title,
+            'slug' => Str::slug($value->slug),
+            'priority' => $value->priority,
+            'price' => $value->price,
+            'percent' => $value->percent,
+            'type' => $value->type,
+            'status' => $value->status,
+            'body' => $value->body,
+        ]);
+
+    }
+
+    public function updateConfimaitonStatus($id, string $status)
+    {
+        return Course::where('id', $id)->update(['confirmation_status' => $status]);
+    }
+
+    public function updatStatus($id, string $status)
+    {
+        return Course::where('id', $id)->update(['status' => $status]);
     }
 }

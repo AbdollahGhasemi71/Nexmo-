@@ -36,7 +36,7 @@ class ImageFileService
     public static function delete($media)
     {
         foreach ($media->files as $file) {
-            \Storage::delete('public'.$file);
+            \Storage::delete('public\\'.$file);
         }
     }
 

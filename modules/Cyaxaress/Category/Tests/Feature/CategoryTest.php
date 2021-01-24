@@ -1,7 +1,9 @@
 <?php
+
 namespace Cyaxaress\Category\Tests\Feature;
 
 use Cyaxaress\Category\Models\Category;
+use Cyaxaress\Course\Database\Seeds\RolePermissionTableSeeder;
 use Cyaxaress\User\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -12,16 +14,27 @@ class CategoryTest extends TestCase
     use WithFaker;
     use RefreshDatabase;
 
-    public function test_authenticated_user_can_see_categories_panel()
+    public function test_manege_categories_permission_holders_panel()
     {
         $this->actionAsAdmin();
+        $this->seed(RolePermissionTableSeeder::class);
+        auth()->user()->givePermissionTo('manage categories');
         $this->get(route('categories.index'))->assertOk();
+    }
+
+    public function test_manege_cannot_permission_holders_panel()
+    {
+        $this->actionAsAdmin();
+        $this->get(route('categories.index'))->assertStatus(403);
+
     }
 
     public function test_user_can_create_category()
     {
         $this->withoutExceptionHandling();
         $this->actionAsAdmin();
+        $this->seed(RolePermissionTableSeeder::class);
+        auth()->user()->givePermissionTo('manage categories');
         $this->createCategory();
 
         $this->assertEquals(1, Category::all()->count());
@@ -29,17 +42,21 @@ class CategoryTest extends TestCase
 
     public function test_user_can_update_category()
     {
-        $newTitle =  'aasdf123';
+        $newTitle = 'aasdf123';
         $this->actionAsAdmin();
+        $this->seed(RolePermissionTableSeeder::class);
+        auth()->user()->givePermissionTo('manage categories');
         $this->createCategory();
         $this->assertEquals(1, Category::all()->count());
-        $this->patch(route('categories.update', 1 ), ['title' => $newTitle, "slug" => $this->faker->word]);
+        $this->patch(route('categories.update', 1), ['title' => $newTitle, "slug" => $this->faker->word]);
         $this->assertEquals(1, Category::whereTitle($newTitle)->count());
     }
 
     public function test_user_can_delete_category()
     {
         $this->actionAsAdmin();
+        $this->seed(RolePermissionTableSeeder::class);
+        auth()->user()->givePermissionTo('manage categories');
         $this->createCategory();
         $this->assertEquals(1, Category::all()->count());
 

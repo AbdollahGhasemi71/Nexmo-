@@ -27,7 +27,7 @@ class MediaFileService
 
                 VideoFileService::upload($file);
                 break;
-        };
+        }
     }
 
     public static function delete($media)
