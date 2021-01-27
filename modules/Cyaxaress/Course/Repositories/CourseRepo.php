@@ -22,6 +22,7 @@ class CourseRepo
             'type' => $values->type,
             'status' => $values->status,
             'body' => $values->body,
+            "Confirmation_status" => Course::CONFIRMATION_STATUS_PENDING
         ]);
     }
 
@@ -49,6 +50,7 @@ class CourseRepo
             'type' => $value->type,
             'status' => $value->status,
             'body' => $value->body,
+            "confirmation_status" => Course::CONFIRMATION_STATUS_PENDING
         ]);
 
     }

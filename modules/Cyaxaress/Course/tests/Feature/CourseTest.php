@@ -2,12 +2,15 @@
 
 namespace Cyaxaress\Course\tests\Feature;
 
+use Cyaxaress\Category\Models\Category;
 use Cyaxaress\Course\Database\Seeds\RolePermissionTableSeeder;
 use Cyaxaress\Course\Models\Course;
 use Cyaxaress\RolePermissions\Models\Permission;
 use Cyaxaress\User\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class CourseTest extends TestCase
@@ -43,6 +46,7 @@ class CourseTest extends TestCase
         $this->get(route('courses.create'))->assertOk();
     }
 
+
     public function test_normal_user_can_not_created_course()
     {
         $this->actUser();
@@ -62,7 +66,18 @@ class CourseTest extends TestCase
         $courses = $this->createCourse();
         auth()->user()->givePermissionTo(Permission::MANAGE_OWN_COURSES);
         $this->get(route('courses.edit', $courses->id))->assertOk();
+    }
 
+
+    public function test_permitted_user_can_not_edite_course()
+    {
+        $this->actAsAdmin();
+        $course = $this->createCourse();
+        $this->get(route('courses.edit', $course->id))->assertOk();
+
+        $this->actUser();
+        auth()->user()->givePermissionTo(Permission::MANAGE_OWN_COURSES);
+        $this->get(route('courses.edit', $course->id))->assertStatus(403);
 
     }
 
@@ -77,9 +92,31 @@ class CourseTest extends TestCase
 
     }
 
+    public function test_user_normal_can_see_not_edit_course()
+    {
+        $this->actUser();
+        $course = $this->createCourse();
+        $this->get(route('courses.edit', $course->id))->assertStatus(403);
+    }
+
+    //    permitted user can store in the course
+
+    public function test_permitted_user_can_stor_on_course()
+    {
+        $this->withoutExceptionHandling();
+        $this->actUser();
+        auth()->user()->givePermissionTo(Permission::MANAGE_OWN_COURSES, Permission::TEACH);
+        Storage::fake('local');
+        $response = $this->post(route('courses.store'), $this->courseData());
+        $response->assertRedirect(route('courses.index'));
+        $this->assertEquals($this->count(), 1);
+
+
+    }
+
 // permitted user can updated course
 
-//  permitted user can delete course
+//  permitted user can delete coursef
 
 // permitted user can accepted course
 // permitted user can rejected course
@@ -122,10 +159,31 @@ class CourseTest extends TestCase
             "percent" => 23,
             "type" => Course::TYPE_FREE,
             "status" => Course::STATUS_NOT_COMPLETED,
-            "confirmation_status" => Course::CONFIRMATION_STATUS_ACCEPTED,
+            "confirmation_status" => Course::CONFIRMATION_STATUS_PENDING
+
         ]);
+    }
 
+    private function createCategory()
+    {
+        return Category::create(['title' => $this->faker->word, 'slug' => $this->faker->word]);
+    }
 
+    private function courseData()
+    {
+        $category = $this->createCategory();
+       return [
+            "teacher_id" => auth()->id(),
+            "category_id" => $category->id,
+            'title' => $this->faker->sentence(2),
+            "slug" => $this->faker->sentence(2),
+            "priority" => 12,
+            "price" => 4500,
+            "percent" => 23,
+            "type" => Course::TYPE_FREE,
+            "image" => UploadedFile::fake()->image('banner.jpg'),
+            "status" => Course::STATUS_NOT_COMPLETED,
+        ];
     }
 
 }
