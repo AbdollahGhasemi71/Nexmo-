@@ -1,22 +1,23 @@
 <?php
+
 namespace Cyaxaress\Course\Database\Seeds;
+
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
+use Cyaxaress\RolePermissions\Models\Permission;
+use Cyaxaress\RolePermissions\Models\Role;
 
 class RolePermissionTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
+
     public function run()
     {
-        Permission::findOrCreate('manage categories');
-        Permission::findOrCreate('manage role_permissions');
-        Permission::findOrCreate('teach');
+        foreach (Permission::$permissions as $permission) {
+            Permission::findOrCreate($permission);
+        }
 
-        Role::findOrCreate('teacher')->givePermissionTo(['teach']);
+        foreach (Role::$roles as $name => $permissions) {
+            Permission::findOrCreate($name)->givePermissionTo($permissions);
+        }
+
     }
 }

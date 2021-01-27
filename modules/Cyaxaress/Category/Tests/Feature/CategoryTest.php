@@ -4,6 +4,7 @@ namespace Cyaxaress\Category\Tests\Feature;
 
 use Cyaxaress\Category\Models\Category;
 use Cyaxaress\Course\Database\Seeds\RolePermissionTableSeeder;
+use Cyaxaress\RolePermissions\Models\Permission;
 use Cyaxaress\User\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -17,14 +18,12 @@ class CategoryTest extends TestCase
     public function test_manege_categories_permission_holders_panel()
     {
         $this->actionAsAdmin();
-        $this->seed(RolePermissionTableSeeder::class);
-        auth()->user()->givePermissionTo('manage categories');
         $this->get(route('categories.index'))->assertOk();
     }
 
     public function test_manege_cannot_permission_holders_panel()
     {
-        $this->actionAsAdmin();
+        $this->actionUser();
         $this->get(route('categories.index'))->assertStatus(403);
 
     }
@@ -33,10 +32,7 @@ class CategoryTest extends TestCase
     {
         $this->withoutExceptionHandling();
         $this->actionAsAdmin();
-        $this->seed(RolePermissionTableSeeder::class);
-        auth()->user()->givePermissionTo('manage categories');
         $this->createCategory();
-
         $this->assertEquals(1, Category::all()->count());
     }
 
@@ -44,8 +40,6 @@ class CategoryTest extends TestCase
     {
         $newTitle = 'aasdf123';
         $this->actionAsAdmin();
-        $this->seed(RolePermissionTableSeeder::class);
-        auth()->user()->givePermissionTo('manage categories');
         $this->createCategory();
         $this->assertEquals(1, Category::all()->count());
         $this->patch(route('categories.update', 1), ['title' => $newTitle, "slug" => $this->faker->word]);
@@ -55,8 +49,6 @@ class CategoryTest extends TestCase
     public function test_user_can_delete_category()
     {
         $this->actionAsAdmin();
-        $this->seed(RolePermissionTableSeeder::class);
-        auth()->user()->givePermissionTo('manage categories');
         $this->createCategory();
         $this->assertEquals(1, Category::all()->count());
 
@@ -66,10 +58,19 @@ class CategoryTest extends TestCase
     private function actionAsAdmin()
     {
         $this->actingAs(factory(User::class)->create());
+        $this->seed(RolePermissionTableSeeder::class);
+        auth()->user()->givePermissionTo(Permission::MANAGE_CATEGORIES);
     }
 
     private function createCategory()
     {
         $this->post(route('categories.store'), ['title' => $this->faker->word, "slug" => $this->faker->word]);
+    }
+
+    public function actionUser()
+    {
+        $this->actingAs(factory(User::class)->create());
+        $this->seed(RolePermissionTableSeeder::class);
+
     }
 }

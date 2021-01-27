@@ -23,6 +23,9 @@
         <testsuite name="Feature">
             <directory suffix="Test.php">./modules/Cyaxaress/Category/Tests/Feature</directory>
         </testsuite>
+        <testsuite name="Feature">
+            <directory suffix="Test.php">./modules/Cyaxaress/Course/Tests/Feature</directory>
+        </testsuite>
 
     </testsuites>
     <filter>

@@ -1,32 +1,40 @@
 <?php
+
 namespace Cyaxaress\Category\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Cyaxaress\Category\Http\Requests\CategoryRequest;
+use Cyaxaress\Category\Models\Category;
 use Cyaxaress\Category\Repositories\CategoryRepo;
 use Cyaxaress\Category\Responses\AjaxResponses;
 
 class CategoryController extends Controller
 {
     public $repo;
+
     public function __construct(CategoryRepo $categoryRepo)
     {
         $this->repo = $categoryRepo;
     }
+
     public function index()
     {
+        $this->authorize('menege',Category::class);
+
         $categories = $this->repo->all();
         return view('Categories::index', compact('categories'));
     }
 
     public function store(CategoryRequest $request)
     {
+        $this->authorize('menege',Category::class);
         $this->repo->store($request);
         return back();
     }
 
     public function edit($categoryId)
     {
+        $this->authorize('menege',Category::class);
         $category = $this->repo->findById($categoryId);
         $categories = $this->repo->allExceptById($categoryId);
         return view('Categories::edit', compact('category', 'categories'));
@@ -34,12 +42,14 @@ class CategoryController extends Controller
 
     public function update($categoryId, CategoryRequest $request)
     {
+        $this->authorize('menege',Category::class);
         $this->repo->update($categoryId, $request);
         return back();
     }
 
     public function destroy($categoryId)
     {
+        $this->authorize('menege',Category::class);
         $this->repo->delete($categoryId);
         return AjaxResponses::SuccessResponse();
     }

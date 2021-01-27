@@ -2,6 +2,7 @@
 
 namespace Cyaxaress\Course\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use Cyaxaress\Category\Repositories\CategoryRepo;
 use Cyaxaress\Category\Responses\AjaxResponses;
 use Cyaxaress\Course\Http\Requests\CourseRequest;
@@ -12,16 +13,19 @@ use Cyaxaress\User\Repositories\UserRepo;
 use Illuminate\Http\Request;
 
 
-class CourseController
+class CourseController extends Controller
 {
+
     public function index(CourseRepo $courseRepo)
     {
+        $this->authorize('menege', Course::class);
         $courses = $courseRepo->paginate();
         return view('Courses::index', compact('courses'));
     }
 
     public function create(UserRepo $userRepo, CategoryRepo $categoryRepo)
     {
+        $this->authorize('create', Course::class);
         $teachers = $userRepo->getTeachers();
         $categories = $categoryRepo->all();
         return view('Courses::create', compact('teachers', 'categories'));
@@ -37,6 +41,7 @@ class CourseController
     public function edit($id, CourseRepo $courseRepo, UserRepo $userRepo, CategoryRepo $categoryRepo)
     {
         $course = $courseRepo->findbyId($id);
+        $this->authorize('edit', $course);
         $teachers = $userRepo->getTeachers();
         $categories = $categoryRepo->all();
         return view('Courses::edit', compact('course', 'teachers', 'categories'));
@@ -75,6 +80,7 @@ class CourseController
         }
         return AjaxResponses::FailResponse();
     }
+
     public function reject($id, CourseRepo $courseRepo)
     {
         if ($courseRepo->updateConfimaitonStatus($id, Course::CONFIRMATION_STATUS_REJECTED)) {
@@ -82,6 +88,7 @@ class CourseController
         }
         return AjaxResponses::FailResponse();
     }
+
     public function lock($id, CourseRepo $courseRepo)
     {
         if ($courseRepo->updatStatus($id, Course::STATUS_LOCKED)) {

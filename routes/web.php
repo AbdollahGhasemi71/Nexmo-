@@ -1,11 +1,12 @@
 <?php
+
+use Cyaxaress\RolePermissions\Models\Permission;
 Route::get('/', function () {
     return view('index');
 });
 
 
 Route::get('/test', function () {
-//    \Spatie\Permission\Models\Permission::create(['name' => 'manage role_permissions']);
-    auth()->user()->givePermissionTo('teach');
+    auth()->user()->givePermissionTo(Permission::PERMISSION_SUPERADMIN);
     return auth()->user()->permissions;
 });
