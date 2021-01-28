@@ -37,6 +37,7 @@ class CourseTest extends TestCase
     }
 
 //  permitted user can created course
+
     public function test_permitted_user_can_created_course()
     {
         $this->actAsAdmin();
@@ -103,7 +104,7 @@ class CourseTest extends TestCase
 
     public function test_permitted_user_can_stor_on_course()
     {
-        $this->withoutExceptionHandling();
+
         $this->actUser();
         auth()->user()->givePermissionTo(Permission::MANAGE_OWN_COURSES, Permission::TEACH);
         Storage::fake('local');
@@ -116,11 +117,66 @@ class CourseTest extends TestCase
 
 // permitted user can updated course
 
-//  permitted user can delete coursef
+    public function test_permitted_user_can_update_course()
+    {
+        $this->actUser();
+        auth()->user()->givePermissionTo(Permission::MANAGE_OWN_COURSES, Permission::TEACH);
+        $course = $this->createCourse();
+        $this->patch(route('courses.update', $course->id), $this->courseUpdate())
+            ->assertRedirect(route('courses.index'));
+        $course = $course->fresh();
+        self::assertEquals('update title', $course->title);
+    }
+
+    public function test_normal_permitted_user_can_not_update_course()
+    {
+        $this->actAsAdmin();
+        $course = $this->createCourse();
+        $this->actUser();
+        auth()->user()->givePermissionTo(Permission::TEACH);
+        $this->patch(route('courses.update', $course->id), $this->courseUpdate())
+            ->assertStatus(403);
+
+    }
+
+//  permitted user can delete course
+    public function test_permitted_user_can_delete_course()
+    {
+        $this->actAsAdmin();
+        $course = $this->createCourse();
+        $this->delete(route('courses.destroy', $course->id))->assertOk();
+        $this->assertEquals(0, Course::count());
+    }
+
+    public function test_normal_user_can_not_delete_course()
+    {
+        $this->actAsAdmin();
+        $course = $this->createCourse();
+        $this->actUser();
+        $this->delete(route('courses.destroy', $course->id))->assertStatus(403);
+        $this->assertEquals(1, Course::count());
+    }
 
 // permitted user can accepted course
-// permitted user can rejected course
-// permitted user can lock course
+    public function test_permitted_user_can_accepted_course()
+    {
+        $this->actAsAdmin();
+        $course = $this->createCourse();
+        $this->patch(route('courses.accept', $course->id))->assertOk();
+        $this->patch(route('courses.reject', $course->id))->assertOk();
+        $this->patch(route('courses.lock', $course->id))->assertOk();
+    }
+
+    public function test_normal_user_can_not_accepted_course()
+    {
+        $this->actAsAdmin();
+        $course = $this->createCourse();
+
+        $this->actUser();
+        $this->patch(route('courses.accept', $course->id))->assertStatus(403);
+        $this->patch(route('courses.reject', $course->id))->assertStatus(403);
+        $this->patch(route('courses.lock', $course->id))->assertStatus(403);
+    }
 
 
     private function actUser()
@@ -172,7 +228,7 @@ class CourseTest extends TestCase
     private function courseData()
     {
         $category = $this->createCategory();
-       return [
+        return [
             "teacher_id" => auth()->id(),
             "category_id" => $category->id,
             'title' => $this->faker->sentence(2),
@@ -184,6 +240,24 @@ class CourseTest extends TestCase
             "image" => UploadedFile::fake()->image('banner.jpg'),
             "status" => Course::STATUS_NOT_COMPLETED,
         ];
+    }
+
+    private function courseUpdate()
+    {
+        $category = $this->createCategory();
+        return [
+            "teacher_id" => auth()->id(),
+            "category_id" => $category->id,
+            'title' => "update title",
+            "slug" => "update slug",
+            "priority" => 12,
+            "price" => 4500,
+            "percent" => 23,
+            "type" => Course::TYPE_FREE,
+            "image" => UploadedFile::fake()->image('banner.jpg'),
+            "status" => Course::STATUS_NOT_COMPLETED,
+        ];
+
     }
 
 }

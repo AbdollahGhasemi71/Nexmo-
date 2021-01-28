@@ -2,6 +2,7 @@
 
 namespace Cyaxaress\Course\Models;
 
+use Cyaxaress\Category\Models\Category;
 use Cyaxaress\Media\Models\Media;
 use Cyaxaress\User\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -43,5 +44,10 @@ class Course extends Model
     public function teacher()
     {
         return $this->belongsTo(User::class, 'teacher_id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }
