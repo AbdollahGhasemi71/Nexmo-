@@ -12,7 +12,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 
 use Tests\TestCase;
 
-class CourseTest extends TestCase
+class RolesTest extends TestCase
 {
     use RefreshDatabase;
     use WithFaker;

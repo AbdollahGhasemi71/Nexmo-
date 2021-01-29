@@ -3,7 +3,7 @@
 namespace Cyaxaress\RolePermissions\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Cyaxaress\Category\Responses\AjaxResponses;
+use Cyaxaress\Common\Responses\AjaxResponses;
 use Cyaxaress\RolePermissions\Http\Requests\RoleRequest;
 use Cyaxaress\RolePermissions\Http\Requests\RoleUpdateRequest;
 use Cyaxaress\RolePermissions\Repositories\PermissionRepo;
