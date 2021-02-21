@@ -58,4 +58,6 @@ class ForgotPasswordController extends Controller
         return redirect()->route('password.showResetForm');
 
     }
+
+
 }

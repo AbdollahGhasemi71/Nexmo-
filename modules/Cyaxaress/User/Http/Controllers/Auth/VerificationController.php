@@ -55,6 +55,7 @@ class VerificationController extends Controller
 
         auth()->user()->markEmailAsVerified();
         return redirect()->route('home');
+        
     }
 
 }

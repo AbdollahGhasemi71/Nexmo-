@@ -1,9 +1,10 @@
 <?php
-
+use Illuminate\Support\Facades\Route;
 Route::group([
     'namespace' => 'Cyaxaress\User\Http\Controllers',
     'middleware' => 'web'
 ], function ($router) {
+
     Route::post('/email/verify', 'Auth\VerificationController@verify')->name('verification.verify');
     Route::post('/email/resend', 'Auth\VerificationController@resend')->name('verification.resend');
     Route::get('/email/verify', 'Auth\VerificationController@show')->name('verification.notice');

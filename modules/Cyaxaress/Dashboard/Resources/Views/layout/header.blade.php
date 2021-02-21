@@ -13,6 +13,8 @@
                 </div>
             </div>
         </div>
-        <a href="" class="logout" title="خروج"></a>
+        <a href="{{route('logout')}}" class="logout" title="خروج" method='post'>
+        @csrf
+        </a>
     </div>
 </div>
